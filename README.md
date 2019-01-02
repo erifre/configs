@@ -32,3 +32,6 @@ Configure Pulseaudio with some virtual sinks. Makes it easier to select what pro
 
 ### Atom Upgrade
 Upgrade Atom by downloading latest deb package.
+
+### Crouton Logout
+Script to logout from a crouton chroot.
