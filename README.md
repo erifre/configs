@@ -29,3 +29,6 @@ Fixes the bluetooth connection to my headphones.
 
 ### Stream Setup Sinks
 Configure Pulseaudio with some virtual sinks. Makes it easier to select what programs audio that should be streamed in OBS Studio.
+
+### Atom Upgrade
+Upgrade Atom by downloading latest deb package.

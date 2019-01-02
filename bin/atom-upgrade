@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+ATOMFILE="/tmp/atom.deb"
+ATOMURL="https://atom.io/download/deb"
+
+if [[ "$(curl $ATOMURL -z $ATOMFILE -o $ATOMFILE -s -L -w %{http_code})" == "200" ]]; then
+  curl -L https://atom.io/download/deb -o "$ATOMFILE"
+  sudo dpkg --install "$ATOMFILE"
+
+  echo "***** apm upgrade - to ensure we update all apm packages *****"
+  apm upgrade --confirm false
+
+  exit 0
+else
+  echo "No upgrade needed"
+fi
