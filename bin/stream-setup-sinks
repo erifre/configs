@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# Check if config exists
+if [ ! -e ~/.streaming-sinks ]; then
+  echo "Configuration file ~/.streaming-sinks does not exist!"
+  exit 1
+fi
+
+# Load config
+. ~/.streaming-sinks
+
+# Check if all configuration if correct
+if [[ ( -z $headset ) && ( -z $speaker ) ]]; then
+  echo "Please set the headset and speaker variable in ~/.streaming-sinks!"
+  exit 2
+fi
+
+# Remove any old sinks
+OLDSINKS=`pactl list short modules | grep "Stream" | cut -f 1`
+for i in $OLDSINKS; do
+  echo "Unloading $i"
+  pactl unload-module "$i"
+done
+
+pactl load-module module-null-sink sink_name="Stream" sink_properties=device.description="Stream"
+STREAMID=`pactl list short | grep "Stream" | grep -v "monitor" | grep "module-null-sink.c" | cut -f 1`
+
+pactl load-module module-combine-sink sink_name="StreamAndSpeakers" sink_properties=device.description="Stream-Speakers" slaves="$STREAMID,$speakers"
+pactl load-module module-combine-sink sink_name="StreamAndHeadset" sink_properties=device.description="Stream-Headset" slaves="$STREAMID,$headset"
+
+pactl load-module module-null-sink sink_name="StreamMusic1" sink_properties=device.description="StreamMusic"
+MUSICID=`pactl list short | grep "StreamMusic1" | grep -v "monitor" | grep "module-null-sink.c" | cut -f 1`
+pactl load-module module-combine-sink sink_name="StreamMusic2" sink_properties=device.description="StreamMusic-Speakers" slaves="$MUSICID,$speakers"
+pactl load-module module-combine-sink sink_name="StreamMusic3" sink_properties=device.description="StreamMusic-Headset" slaves="$MUSICID,$headset"
+
+pacmd set-default-sink "$speakers"
