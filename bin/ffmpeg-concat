@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    --output)
+    OUTPUT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -q|--quality)
+    QUALITY="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -p|--preset)
+    PRESET="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --threads)
+    THREADS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+QUALITY="${QUALITY:-23}"
+PRESET="${PRESET:-medium}"
+THREADS="${THREADS:-4}"
+OUTPUT="${OUTPUT:-out.mkv}"
+
+COMMAND="ffmpeg "
+MAPINDEX=0
+
+for file in "$@"
+do
+  if [[ ! -f $file ]]; then
+    echo "File \"$file\" does not exist!"
+    exit 1
+  fi
+  COMMAND+="-i \"$file\" "
+  MAP+="[$MAPINDEX:v:0][$MAPINDEX:a:0]"
+  MAPINDEX=$[MAPINDEX+1]
+done
+
+COMMAND+="-filter_complex \"${MAP}concat=n=$MAPINDEX:v=1:a=1[outv][outa]\" -map \"[outv]\" -map \"[outa]\" "
+COMMAND+="-c:v libx264 -crf \"${QUALITY}\" -preset \"${PRESET}\" -c:a aac -b:a 192k "
+COMMAND+="${OUTPUT}"
+
+echo $COMMAND
+eval "$COMMAND"

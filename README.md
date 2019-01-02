@@ -15,6 +15,9 @@ Turns the night light in Gnome 3 on and off.
 ### FFmpeg Convert
 Simple interface for converting videos. Normalizing audio, cut part of the video, select preset and shift the audio.
 
+## FFmpeg concat
+Script for concatenating video files.
+
 ### Laravel Fix Permission
 Make sure the needed files are readable and writable by the group www-data. Uses ACL.
 
