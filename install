@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+symlink() {
+  echo "Installing ${1/#$HOME/~} into ${2/#$HOME/~}"
+
+  TARGET=`realpath ${1/#~/$HOME}`
+	ln -nsf "${TARGET}" "${2/#~/$HOME}"
+}
+
+dotfile() {
+  FILE=`basename $1`
+  [[ -d ~/.$FILE && ! -L ~/.$FILE ]] && rm -r ~/."$FILE"
+  symlink $1 "~/.$FILE"
+}
+
+# Installing generic dotfiles
+for file in dotfiles/*; do
+  if [[ -f $file ]]; then
+    dotfile "$file"
+  fi
+done
+
+# Install computer specific dotfiles
+if [ -d "dotfiles/$HOSTNAME/" ]; then
+  for file in dotfiles/$HOSTNAME/*; do
+    if [[ -f $file ]]; then
+      dotfile "$file"
+    fi
+  done
+fi
+
+# Installing custom bins
+mkdir -p ~/.local/bin
+for f in bin/*; do
+	basename=${f##*/}
+	bin=~/.local/bin/$basename
+	if [[ -e $bin && ! -L $bin ]]; then
+		echo "$bin exists and is not a link, skipping" >&2
+	else
+		symlink "$PWD/$f" "$bin"
+	fi
+done
