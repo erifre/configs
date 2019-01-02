@@ -15,17 +15,17 @@ Turns the night light in Gnome 3 on and off.
 ### FFmpeg Convert
 Simple interface for converting videos. Normalizing audio, cut part of the video, select preset and shift the audio.
 
-## FFmpeg concat
+### FFmpeg concat
 Script for concatenating video files.
 
 ### Laravel Fix Permission
 Make sure the needed files are readable and writable by the group www-data. Uses ACL.
 
-## SVTPlay download
+### SVTPlay download
 Downloads video from SVTPlay with a nice title on the files.
 
-## Plattan2 A2DP
+### Plattan2 A2DP
 Fixes the bluetooth connection to my headphones.
 
-## Stream Setup Sinks
+### Stream Setup Sinks
 Configure Pulseaudio with some virtual sinks. Makes it easier to select what programs audio that should be streamed in OBS Studio.
