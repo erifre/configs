@@ -1,2 +1,19 @@
 # My configuration
 This is a collection my configuration and bin files that make my work run more fluent.
+
+## Commands
+
+### Do Upgrade
+Simple script that runs update via APT, Snap and Flatpak.
+
+### Darken screens
+I'm using three monitors. This turns off the first and the third leaving me with the middle one on.
+
+### Night light
+Turns the night light in Gnome 3 on and off.
+
+### FFmpeg Convert
+Simple interface for converting videos. Normalizing audio, cut part of the video, select preset and shift the audio.
+
+### Laravel Fix Permission
+Make sure the needed files are readable and writable by the group www-data. Uses ACL.

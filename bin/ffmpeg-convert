@@ -1,0 +1,126 @@
+#!/usr/bin/env bash
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+
+case $key in
+    -q|--quality)
+    QUALITY="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -p|--preset)
+    PRESET="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -s|--start)
+    START="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --end)
+    END="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --shift)
+    SHIFT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --threads)
+    THREADS="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    --output)
+    OUTPUT="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    *)    # unknown option
+    POSITIONAL+=("$1") # save it in an array for later
+    shift # past argument
+    ;;
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+START="${START:-0}"
+QUALITY="${QUALITY:-23}"
+PRESET="${PRESET:-medium}"
+THREADS="${THREADS:-4}"
+
+FILE="$@"
+if [ ! -f "${FILE}" ]; then
+  echo "!!! File \"${FILE}\" does not exist!"
+  exit 1
+fi
+
+if [ ! -z $SHIFT ]; then
+  START2=`echo "${START} + ${SHIFT}" | bc`
+else
+  START2=$START
+fi
+
+START=`echo "${START}" | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'`
+START2=`echo "${START2}" | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'`
+END=`echo "${END}" | awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }'`
+
+if [ ! -z "${END}" ];
+then
+  LENGTH=`echo "${END} - ${START}" | bc`
+fi
+
+extension="${FILE##*.}"
+filename="${FILE%.*}"
+
+OUTPUT="${OUTPUT:-$filename-output.$extension}"
+
+COMMAND="ffmpeg -ss \"${START}\""
+if [ ! -z $LENGTH ]; then
+  COMMAND+=" -t \"${LENGTH}\""
+fi
+COMMAND+=" -i \"${FILE}\" -ss \"${START2}\""
+
+if [ ! -z $LENGTH ]; then
+  COMMAND+=" -t \"${LENGTH}\""
+fi
+
+COMMAND+=" -i \"${FILE%.mkv}-tmp-audio.mp3\" \
+-map 0:v:0 -map 1:a:0 \
+-vf scale=-1:720 -c:v libx264 -crf \"${QUALITY}\" -preset \"${PRESET}\" -c:a copy -y \
+-threads ${THREADS} \
+\"${OUTPUT}\""
+
+
+# Extract audio
+if [ ! -f "${filename}-tmp-audio.mp3" -o [[$(find "${filename}-tmp-audio.mp3" -mtime +7 -print)]] ]; then
+
+  ffmpeg -i "${FILE}" \
+  -af "dynaudnorm=p=1/sqrt(2):m=100:s=12:g=31" -vn \
+  -threads ${THREADS} -y \
+  "${filename}-tmp-audio.mp3"
+
+  if [ ! $? -eq 0 ]; then
+    echo "!!! Audio conversion failed!"
+    rm -f "${filename}-tmp-audio.mp3"
+    exit 1
+  fi
+fi
+
+echo ${COMMAND}
+
+# Combine audio and video
+eval "${COMMAND}"
+
+if [ ! $? -eq 0 ]; then
+  echo "!!! Video conversion failed!"
+  exit 1
+fi
+
+# Remove temporary files
+rm -f "${filename}-tmp-*"

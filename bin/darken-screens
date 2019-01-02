@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+TMPDIR="/tmp/darken-screens.$USER.state"
+
+read SCREEN_ARE_DIMMED < "$TMPDIR"
+
+if [ "$SCREEN_ARE_DIMMED" == "0" ]; then
+
+	xrandr --output DVI-I-1 --brightness 1
+	xrandr --output HDMI-0 --brightness 1
+	echo "1" > "$TMPDIR"
+
+	if [[ $(gsettings get org.gnome.settings-daemon.plugins.color night-light-enabled) = "true" ]]; then
+		gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled false
+		sleep 0.1
+		gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled true
+	fi
+
+else
+
+	xrandr --output DVI-I-1 --brightness 0
+	xrandr --output HDMI-0 --brightness 0
+	echo "0" > "$TMPDIR"
+
+fi

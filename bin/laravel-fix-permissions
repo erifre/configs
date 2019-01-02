@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+if [ ! -f "artisan" ]; then
+  echo "Is this really a Laravel installation?"
+  exit 1
+fi
+
+setfacl -d -R -m group:www-data:rx .
+setfacl -R -m group:www-data:rx .
+
+setfacl -d -R -m group:www-data:rwx bootstrap database storage
+setfacl -R -m group:www-data:rwx bootstrap database storage
