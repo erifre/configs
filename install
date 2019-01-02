@@ -40,3 +40,9 @@ for f in bin/*; do
 		symlink "$PWD/$f" "$bin"
 	fi
 done
+
+# Remove broken symlinks
+for f in `find ~/.local/bin -xtype l`; do
+  echo "Removing broken: $f"
+  rm "$f"
+done
