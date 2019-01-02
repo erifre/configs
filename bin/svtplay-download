@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+URL="$@"
+TMP=$(mktemp /tmp/svtplay.XXXXXXXXXX) || { echo "Failed to create temp file"; exit 1; }
+
+wget -q "$URL" -O "$TMP"
+
+TITLE=`sed -n 's#.*<title.*>\(.*\) |.*</title>.*#\1#p' "$TMP"`
+
+streamlink "$URL" best -o "${TITLE}.mp4"
