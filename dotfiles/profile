@@ -20,12 +20,7 @@ fi
 export USE_CCACHE=1
 export CCACHE_MAXSIZE=5G
 
-if [ "$HOSTNAME" = "toothless" ]; then
-
-    # Mount internal drives
-    mountpoint -q /home/erik/sdb || sudo mount -o bind /mnt/sdb/home/erik /home/erik/sdb
-    mountpoint -q /home/erik/sdc || sudo mount -o bind /mnt/sdc/home/erik /home/erik/sdc
-
-    # Set CCACHE dir
-    export CCACHE_DIR=~/sdc/ccache
+# Run host specific configuration
+if [ -f "$HOME/.profile-local" ]; then
+    . "$HOME/.profile-local"
 fi

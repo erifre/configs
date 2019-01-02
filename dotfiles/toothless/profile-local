@@ -1,0 +1,6 @@
+# Mount internal drives
+mountpoint -q /home/erik/sdb || sudo mount -o bind /mnt/sdb/home/erik /home/erik/sdb
+mountpoint -q /home/erik/sdc || sudo mount -o bind /mnt/sdc/home/erik /home/erik/sdc
+
+# Set CCACHE dir
+export CCACHE_DIR=~/sdc/ccache
