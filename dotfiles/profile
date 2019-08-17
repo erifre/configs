@@ -24,3 +24,7 @@ export CCACHE_MAXSIZE=5G
 if [ -f "$HOME/.profile-local" ]; then
     . "$HOME/.profile-local"
 fi
+
+# Make sudo a bit more Canadian
+alias please="sudo"
+alias pls="sudo"
