@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-exec gnome-session-quit --no-prompt
-exec gnome-session-quit --logout --force
