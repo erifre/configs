@@ -32,3 +32,6 @@ alias pls="sudo"
 # Make encryption a bit easier
 alias gencrypt="gpg --encrypt --sign --armor"
 alias gdecrypt="gpg --decrypt"
+
+# Sail for Laravel
+alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
