@@ -28,3 +28,7 @@ fi
 # Make sudo a bit more Canadian
 alias please="sudo"
 alias pls="sudo"
+
+# Make encryption a bit easier
+alias gencrypt="gpg --encrypt --sign --armor"
+alias gdecrypt="gpg --decrypt"
