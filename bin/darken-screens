@@ -1,14 +1,42 @@
 #!/usr/bin/env bash
 
-TMPDIR="/tmp/darken-screens.$USER.state"
+mkdir -p "$HOME/.cache/"
 
-read SCREEN_ARE_DIMMED < "$TMPDIR"
+TMPFILE="$HOME/.cache/darken-screens.state"
+CONFIGFILE="$HOME/.config/darken-screens"
+
+# Create the file if it's not there
+if [ ! -f "$TMPFILE" ]; then
+	touch "$TMPFILE"
+fi
+
+# Check if configuration exists
+if [ ! -f "$CONFIGFILE" ]; then
+	SCREENS=`xrandr --listmonitors | awk -vORS=, '{print $4}' | awk NF | sed 's/,$//' | sed 's/^,//'`
+	echo "screens=${SCREENS}" > "$CONFIGFILE"
+	echo "Configuration created in $CONFIGFILE!"
+	exit 1
+fi
+
+. "$CONFIGFILE"
+
+# Check if all configuration if correct
+if [[ ( -z "${screens}" ) ]]; then
+	echo "Please create a configuration in $CONFIGFILE!"
+	exit 2
+fi
+
+read SCREEN_ARE_DIMMED < "$TMPFILE"
 
 if [ "$SCREEN_ARE_DIMMED" == "0" ]; then
 
-	xrandr --output DVI-I-1 --brightness 1
-	xrandr --output HDMI-0 --brightness 1
-	echo "1" > "$TMPDIR"
+	for i in $(echo $screens | sed "s/,/ /g")
+	do
+		xrandr --output "$i" --brightness 1
+		echo "$i"
+	done
+
+	echo "1" > "$TMPFILE"
 
 	if [[ $(gsettings get org.gnome.settings-daemon.plugins.color night-light-enabled) = "true" ]]; then
 		gsettings set org.gnome.settings-daemon.plugins.color night-light-enabled false
@@ -18,8 +46,11 @@ if [ "$SCREEN_ARE_DIMMED" == "0" ]; then
 
 else
 
-	xrandr --output DVI-I-1 --brightness 0
-	xrandr --output HDMI-0 --brightness 0
-	echo "0" > "$TMPDIR"
+	for i in $(echo $screens | sed "s/,/ /g")
+	do
+		xrandr --output "$i" --brightness 0
+		echo "$i"
+	done
+	echo "0" > "$TMPFILE"
 
 fi
