@@ -25,6 +25,11 @@ if [ -f "$HOME/.profile-local" ]; then
     . "$HOME/.profile-local"
 fi
 
+# Set up n
+export N_PREFIX="$HOME/.n"
+export PATH="$N_PREFIX/bin:$PATH"
+export N_USE_XZ=1
+
 # Make sudo a bit more Canadian
 alias please="sudo"
 alias pls="sudo"
