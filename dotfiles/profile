@@ -39,4 +39,19 @@ alias gencrypt="gpg --encrypt --sign --armor"
 alias gdecrypt="gpg --decrypt"
 
 # Sail for Laravel
-alias sail='[ -f sail ] && bash sail || bash vendor/bin/sail'
+alias sail='f() { command -v ./vendor/bin/sail > /dev/null && bash ./vendor/bin/sail $@ || echo "Can not find Laravel Sail in this project!" };f'
+alias sa='sail artisan'
+alias sp='sail php'
+alias sc='sail composer'
+alias sn='sail npm'
+alias swatch='sail npm run watch'
+alias sprod='sail npm run production'
+alias sdev='sail npm run dev'
+alias st='sail test'
+alias stp='sail test --parallel'
+alias sdusk='sail dusk'
+alias ss='sail shell'
+alias stinker='sail tinker'
+alias sb='sail build'
+alias sshare='sail share'
+alias stan='sp ./vendor/bin/phpstan'
